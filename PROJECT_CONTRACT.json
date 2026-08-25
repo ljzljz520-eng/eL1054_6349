@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "metrics": {
+    "production_loc": 2459,
+    "production_files": 35,
+    "production_packages": 11,
+    "test_files": 10,
+    "production_functions": 126,
+    "decision_points": 286
+  },
+  "persistence": {
+    "module": "go.etcd.io/bbolt",
+    "entities": [
+      "Authorization",
+      "Student",
+      "Route",
+      "Guardian",
+      "AuditEvent",
+      "PrintRecord"
+    ],
+    "reopen_test": "TestPersistenceSurvivesReopen"
+  },
+  "workflows": [
+    {
+      "steps": [
+        "班主任录入并校验学生、线路、接送人与授权日期",
+        "系统将规范化后的授权聚合持久化为草稿",
+        "班主任签发当日授权并生成审计记录",
+        "业务完成时执行配置的完成通知"
+      ],
+      "test": "TestBusinessChain12"
+    },
+    {
+      "steps": [
+        "班主任创建并签发当日授权",
+        "系统填充模板并生成可下载的 HTML 文书",
+        "门卫打印文书并核对接送人证件后四位",
+        "系统保存打印记录并完成授权通知"
+      ],
+      "test": "TestWorkflowGatePrint"
+    },
+    {
+      "steps": [
+        "班主任创建授权草稿",
+        "班主任签发授权供门岗核验",
+        "临时安排取消后班主任填写原因并撤销",
+        "门卫预览撤销警示且管理员查询完整审计链"
+      ],
+      "test": "TestWorkflowRevokeAndAudit"
+    }
+  ]
+}
